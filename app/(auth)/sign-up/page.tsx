@@ -63,7 +63,7 @@ const SignUp = () => {
                     error={errors.password}
                     validation={{ required: 'Password is required', minLength: 8 }}
                 />
-                <CountrySelectField />
+                {/*<CountrySelectField />*/}
                 <SelectField
                     name="investmentGoals"
                     label={"Investment Goals"}
