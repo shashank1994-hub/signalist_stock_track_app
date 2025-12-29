@@ -72,3 +72,30 @@ export const getWatchlistSymbols = async (): Promise<string[]> => {
         return [];
     }
 };
+
+/**
+ * Check if a symbol is in the user's watchlist
+ * @param symbol - Stock symbol to check
+ * @returns Boolean indicating if symbol is in watchlist
+ */
+export const isInWatchlist = async (symbol: string): Promise<boolean> => {
+    try {
+        await connectToDatabase();
+
+        const session = await auth.api.getSession({ headers: await headers() });
+
+        if (!session?.user?.id) {
+            return false;
+        }
+
+        const item = await Watchlist.findOne({
+            userId: session.user.id,
+            symbol: symbol.toUpperCase(),
+        });
+
+        return !!item;
+    } catch (error) {
+        console.error('Error checking watchlist:', error);
+        return false;
+    }
+};

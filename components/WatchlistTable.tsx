@@ -14,12 +14,21 @@ import { Trash2, Loader2 } from "lucide-react";
 import { WATCHLIST_TABLE_HEADER } from "@/lib/constants";
 import { toast } from "sonner";
 
+// Define the watchlist item type based on the API response
+interface WatchlistItem {
+    _id: string;
+    userId: string;
+    symbol: string;
+    company: string;
+    addedAt: string;
+}
+
 const WatchlistTable = () => {
-    const [watchlist, setWatchlist] = useState<any[]>([]);
+    const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [removingSymbol, setRemovingSymbol] = useState<string | null>(null);
 
-    const fetchWatchlist = async () => {
+    const fetchWatchlist = async (): Promise<void> => {
         try {
             const response = await fetch('/api/watchlist');
             const data = await response.json();
@@ -37,7 +46,7 @@ const WatchlistTable = () => {
         }
     };
 
-    const handleRemove = async (symbol: string) => {
+    const handleRemove = async (symbol: string): Promise<void> => {
         setRemovingSymbol(symbol);
         try {
             const response = await fetch(`/api/watchlist?symbol=${symbol}`, {
@@ -47,7 +56,9 @@ const WatchlistTable = () => {
             const data = await response.json();
 
             if (response.ok && data.success) {
-                setWatchlist(watchlist.filter(item => item.symbol !== symbol));
+                setWatchlist((prevWatchlist) =>
+                    prevWatchlist.filter((item) => item.symbol !== symbol)
+                );
                 toast.success(`${symbol} removed from watchlist`);
             } else {
                 toast.error(data.error || 'Failed to remove from watchlist');
@@ -96,8 +107,8 @@ const WatchlistTable = () => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {watchlist.map((item) => (
-                        <TableRow key={item.symbol}>
+                    {watchlist.map((item: WatchlistItem) => (
+                        <TableRow key={item._id}>
                             <TableCell className="text-left">{item.company}</TableCell>
                             <TableCell className="text-left font-semibold">{item.symbol}</TableCell>
                             <TableCell className="text-left">-</TableCell>
