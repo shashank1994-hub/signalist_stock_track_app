@@ -50,18 +50,6 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Check if already exists
-        const existing = await Watchlist.findOne({
-            userId: session.user.id,
-            symbol: symbol.toUpperCase(),
-        });
-
-        if (existing) {
-            return NextResponse.json(
-                { success: false, error: 'Stock already in watchlist' },
-                { status: 400 }
-            );
-        }
 
         // Add to watchlist
         const watchlistItem = await Watchlist.create({
